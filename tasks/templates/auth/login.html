@@ -1,0 +1,18 @@
+{% extends 'layouts/base.html' %}
+
+{% block 'title' %}
+    Register
+{% endblock %}
+
+{% block 'content' %}
+    <form action="{% url 'login' %}" method="POST">
+        {{error}}
+         
+        {% csrf_token %}
+        {{form.as_p}}
+
+        <button>
+            Submit
+        </button>
+    </form>
+{% endblock %}
