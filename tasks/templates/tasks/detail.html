@@ -1,0 +1,24 @@
+{% extends 'layouts/base.html' %}
+
+{% block 'title' %}
+    Task {{task}}
+{% endblock %}
+
+{% block 'content' %}  
+    {{error}}
+    
+    {% if task.important %}
+        <h2 style="color:red">{{task.title}}</h2>
+    {% else %}
+        <h2>{{task.title}}</h2>
+    {% endif %}
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button>
+            Edit
+        </button>
+    </form>
+
+{% endblock %}

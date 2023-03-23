@@ -10,3 +10,6 @@ class Task(models.Model):
     dateCompleted = models.DateTimeField(blank=True, null=True)
     important = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title + " by " + str(self.user)

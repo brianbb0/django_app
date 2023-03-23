@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
+from .forms import TaskCreationForm
+from .models import Task
 # Create your views here.
 
 
@@ -50,3 +52,48 @@ def signin(request):
         'form': AuthenticationForm,
         'error': error,
     })
+
+def createTask(request):
+    error = ""
+    if request.method == 'POST':
+        try:
+            form = TaskCreationForm(request.POST)
+            task = form.save(commit=False)
+            task.user = request.user
+            task.save()
+            return redirect('tasksView')
+        except IntegrityError:
+            error = 'The task already exists'
+        except ValueError:
+            error = 'Pleasse, provide valid data'
+    
+    return render(request,'tasks/create.html', {
+        'form': TaskCreationForm,
+        'error': error,
+    })
+
+def tasksView(request):
+    tasks = Task.objects.filter(user=request.user)
+    # tasks = Task.objects.all()
+    return render(request, 'tasks/show.html', {
+        'tasks': tasks,
+    })
+
+def taskDetailsView(request, id):
+    task = get_object_or_404(Task, id=id, user=request.user)
+    error = ""
+    form = TaskCreationForm(instance=task)
+    if request.method == 'POST':
+        try:
+            form = TaskCreationForm(request.POST, instance=task)
+            form.save()
+            return redirect('tasksView')
+        except:
+            error = 'Pleasse, introduce valid data'
+            
+    return render(request, 'tasks/detail.html', {
+        'form': form,
+        'task': task,
+        'error': error,
+    })
+

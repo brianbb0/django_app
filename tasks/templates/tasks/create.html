@@ -1,0 +1,21 @@
+{% extends 'layouts/base.html' %}
+
+{% block 'title' %}
+    Tasks form
+{% endblock %}
+
+{% block 'content' %}
+    <h1>Create Task</h1>
+
+    {{error}}
+
+    <form action="" method="Post">
+        {% csrf_token %}
+
+        {{form.as_p}}
+
+        <button>
+            Create Task
+        </button>
+    </form>
+{% endblock %}
