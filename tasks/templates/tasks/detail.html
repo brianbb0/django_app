@@ -6,7 +6,7 @@
 
 {% block 'content' %}  
     {{error}}
-    
+
     {% if task.important %}
         <h2 style="color:red">{{task.title}}</h2>
     {% else %}
@@ -19,6 +19,20 @@
         <button>
             Edit
         </button>
+        <button form="completed">
+            Mark task as completed
+        </button>
+        <button form="delete">
+            Delete Task
+        </button>
+    </form>
+    <form id="completed" action="{% url 'taskCompleted' task.id %}" method="POST">
+        {% csrf_token %}
+        
+    </form>
+
+    <form id="delete" action="{% url 'deleteTask' task.id %}">
+        
     </form>
 
 {% endblock %}

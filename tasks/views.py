@@ -4,8 +4,10 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
+from django.utils import timezone
 from .forms import TaskCreationForm
 from .models import Task
+from django.contrib.auth.decorators import login_required, permission_required
 # Create your views here.
 
 
@@ -34,6 +36,8 @@ def signup(request):
 def home(request):
     return render(request, 'home.html')
 
+
+@login_required
 def signout(request):
     logout(request)
     return redirect('home')
@@ -53,6 +57,9 @@ def signin(request):
         'error': error,
     })
 
+
+@login_required
+@permission_required('tasks.add_task')
 def createTask(request):
     error = ""
     if request.method == 'POST':
@@ -72,13 +79,16 @@ def createTask(request):
         'error': error,
     })
 
+@login_required
+@permission_required('tasks.view_task')
 def tasksView(request):
-    tasks = Task.objects.filter(user=request.user)
-    # tasks = Task.objects.all()
+    tasks = Task.objects.filter(user=request.user, dateCompleted__isnull=True)
     return render(request, 'tasks/show.html', {
         'tasks': tasks,
     })
 
+@login_required
+@permission_required('tasks.view_task')
 def taskDetailsView(request, id):
     task = get_object_or_404(Task, id=id, user=request.user)
     error = ""
@@ -97,3 +107,26 @@ def taskDetailsView(request, id):
         'error': error,
     })
 
+@login_required
+@permission_required('tasks.change_task')
+def taskCompleted(request, id):
+    task = get_object_or_404(Task, id=id, user=request.user)
+    if request.method == 'POST':
+        task.dateCompleted = timezone.now()
+        task.save()
+        return redirect('tasksView')
+    
+@login_required
+@permission_required('tasks.delete_task')
+def deleteTask(request, id):
+    task = get_object_or_404(Task, id=id, user=request.user)
+    task.delete()
+    return redirect('tasksView')
+
+@login_required
+@permission_required('tasks.change_task')
+def completedTasks(request):
+    tasks = Task.objects.filter(user=request.user, dateCompleted__isnull=False)
+    return render(request, 'tasks/completed.html', {
+        'tasks': tasks,
+    })

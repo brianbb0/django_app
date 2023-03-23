@@ -10,18 +10,10 @@
     {% for task in tasks %}
     <li>
         <a href="{% url 'taskDetailsView' task.id %}">
-            {% if task.dateCompleted %}
-                <h2 style="color:green">{{task.title}} ✅</h2>
-            {% else %}
-                {% if task.important %}
-                    <h2 style="color:red">{{task.title}}</h2>
-                {% else %}
-                    <h2>{{task.title}}</h2>
-                {% endif %}
-            {% endif %}
+            <h2 style="color:green">{{task.title}} ✅</h2>
         </a>
-        
         <p>{{task.description}}</p>
+        <p>Completed at {{task.dateCompleted|date:'M j Y:i'}}</p>
         <small>Created by {{task.user}}</small>
         {{task.dateCompleted}}
         <form action="{% url 'deleteTask' task.id %}">
@@ -33,5 +25,5 @@
 
     {% endfor %}
 </ul>
-    
+
 {% endblock %}
